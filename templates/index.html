@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <link rel="stylesheet" href="{{ url_for('static', filename= 'css/w3.css') }}">
+        <title>PROBLEME DE CARRAFE D'EAU</title>
+
+        <style>
+            *{
+                margin: 0px;
+                padding: 0px;
+            }
+            .container{
+                height: 100vh;
+                width: 100vw;
+                background-color: whitesmoke;
+            }
+            .jugs{
+                /*position: relative;*/
+                /*top: 10vh;*/
+            }
+            .jug1{
+                margin-left: 10vw;
+                height: 40vh;
+                width: 20vw;
+                color: white;
+                font-size: 80px;
+                font-weight: bold;
+                text-align: center;
+                background-image: linear-gradient(0deg,rgb(22, 255, 255) 0%,black 0%,gray 100%);
+                display: flex;
+            }
+            .jug2{
+                margin-left: 2vw;
+                height: 40vh;
+                width: 20vw;
+                color: white;
+                font-size: 80px;
+                text-align: center;
+                font-weight: bold;
+                background-image: linear-gradient(0deg,rgb(18, 242, 250) 0%,black 0%,gray 100%);
+                display: flex;
+            }
+            /*input,button{
+                position: relative;
+                top: 20px;
+                left: 40px;
+                padding: 10px;
+                height: 15px;
+                border-radius: 5px;
+            }*/
+            button{
+                height: 40px;
+                width: 100px;
+                background-color: green;
+                color: yellow;
+                text-align: center;
+                padding: 0px;
+            }
+
+            body{
+                background-position: center !important;
+                background-size: cover !important;
+                /*background-image: url("/banner.jpg") !important;*/
+                
+                min-height: 100%;
+                height: 90vh;
+                overflow: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background-repeat: no-repeat;
+                }
+            .back{
+
+                background: url('/static/img/IA.jpg');
+                width: 100%;
+                height: calc(100%);
+                position: absolute;
+                z-index:-1;
+                filter: blur(2px);
+                background-size: cover !important;
+            }
+            
+            output{
+                display: block;
+                height: 38px;
+                font-size: 16px;
+                padding-left: 16px;
+                padding-right: 16px;
+                border: rgba(196, 196, 196, 0.6) 1px solid;
+                text-align: center;
+                border-bottom: 1px solid rgba(0, 28, 151, 0.877);
+                margin-top: 5px;
+                padding-bottom: 5px;
+                font-size: 16px;
+                width: 100%;
+                
+            }
+
+        </style>
+
+        <script>
+
+            function delay_display(a,b){
+                j1 = (a/cap1)*100;
+                j2 = (b/cap2)*100;
+                document.getElementById('jug1').innerHTML = a;
+                document.getElementById('jug2').innerHTML = b;
+                document.getElementById('jug1').style.backgroundImage = `linear-gradient(0deg, aqua ${j1}%,silver ${j1+0.1}%,gray 100%)`;
+                document.getElementById('jug2').style.backgroundImage = `linear-gradient(0deg, aqua ${j2}%,silver ${j2+0.1}%,gray 100%)`;
+                console.log("hello ",j1,j2);
+            }
+
+            function lazy_call(a,b,i){
+                setTimeout(delay_display,1000*(i+2),a,b);
+            }
+
+            function play_func(){
+                cap1 = document.getElementById('cap1').value;
+                cap2 = document.getElementById('cap2').value;
+                i1 = document.getElementById('i1').value;
+                i2 = document.getElementById('i2').value;
+                f1 = document.getElementById('f1').value;
+                f2 = document.getElementById('f2').value;
+                data = [cap1,cap2,i1,i2,f1,f2]
+                fetch('/play',{
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body:JSON.stringify(data)
+                }).then(response => response.json())
+                .then(data => {
+                    if(data!='NOT POSSIBLE'){
+                        document.getElementById('error').innerHTML='';
+                    for(let i=0;i<data.length;i++){
+                        lazy_call(data[i][0],data[i][1],i);
+                    }
+                    }
+                    else{
+                        document.getElementById('error').innerHTML = data;
+                        document.getElementById('jug1').innerHTML = '';
+                        document.getElementById('jug2').innerHTML = '';
+                        document.getElementById('jug1').style.backgroundImage = `linear-gradient(0deg,aqua 0%,silver 0%,gray 100%)`;
+                        document.getElementById('jug2').style.backgroundImage = `linear-gradient(0deg,aqua 0%,silver 0%,gray 100%)`;
+                    }
+                })
+            }
+        </script>
+
+    </head>
+
+    <body>
+        <div class="back"></div>
+            <div style="display:flex;" class="w3-card-4">
+                <div id="output">
+                    <div class="w3-row-padding">
+                        <div class="w3-half">
+                            <label>Capacité du 1ér Carrafe</label>
+                                <input class="w3-input w3-border" id="cap1" type="text" placeholder="valeur carafe 1">
+                        </div>
+                        <div class="w3-half">
+                            <label>Capacitè du 2ém Carrafe</label>
+                            <input class="w3-input w3-border" id="cap2" type="text" placeholder="valeur carafe 2">
+                        </div>
+                    </div>
+        <br>
+        <div class="w3-row-padding">
+            <div class="w3-half">
+                <label>Valeur Initiale du Carrafe</label>
+                <input class="w3-input w3-border" id="i1" type="text" placeholder="valeur Initiale 1">
+            </div>
+            <div class="w3-half">
+                <label>Valeur Initiale du Carrafe</label>
+                <input class="w3-input w3-border" id="i2" type="text" placeholder="valeur Initiale 2">
+            </div>
+        </div>
+        <br>
+        <div class="w3-row-padding">
+            <div class="w3-half">
+                <label>Valeur finale attendu</label>
+                <input class="w3-input w3-border" id="f1" type="text" placeholder="valeur finale 1">
+            </div>
+            <div class="w3-half">
+                <label>Valeur finale attendu</label>
+                <input class="w3-input w3-border" id="f2" type="text" placeholder="valeur finale 2">
+            </div>
+        </div>
+        <br>
+        <div style="display: flex; justify-content: center;">
+            <button class="w3-button w3-wide w3-round-large w3-border w3-border-blue"onclick="play_func()" >LANCER</button>
+        </div>
+        
+        <br>
+        </div>
+        <div id="error" style="color:red;margin-left: 5px;font-weight: bold;font-size: 20px;"></div>
+        <div class="jugs" style="display:flex;">
+        <div id="jug1" class="jug1"></div>
+        <div id="jug2" class="jug2"></div>
+        </div>
+        </div>
+    </div>
+        
+    </body>
+</html>
